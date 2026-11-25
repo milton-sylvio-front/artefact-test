@@ -1,9 +1,10 @@
 import Link from "next/link";
 import TaskList from "../components/task-list";
 import { fetchTasksFromBackend } from "../lib/tasks";
+import type { Task } from "../lib/tasks";
 
 export default async function HomePage() {
-  let initialTasks = [];
+  let initialTasks: Task[] = [];
   let initialError = "";
 
   try {

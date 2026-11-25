@@ -1,4 +1,25 @@
-export async function callTrpc(procedure, { type = "query", input = null, cache } = {}) {
+type CallTrpcOptions = {
+  type?: "query" | "mutation";
+  input?: unknown;
+  cache?: RequestCache;
+};
+
+type TrpcResponse = {
+  result?: {
+    data?: unknown;
+  };
+  error?: {
+    json?: {
+      message?: unknown;
+    };
+    message?: unknown;
+  };
+};
+
+export async function callTrpc<T>(
+  procedure: string,
+  { type = "query", input = null, cache }: CallTrpcOptions = {},
+): Promise<T> {
   const baseUrl =
     typeof window === "undefined"
       ? `${process.env.BACKEND_URL || "http://localhost:3001"}/trpc`
@@ -21,9 +42,9 @@ export async function callTrpc(procedure, { type = "query", input = null, cache 
       : {}),
   });
 
-  let payload;
+  let payload: TrpcResponse | undefined;
   try {
-    payload = await response.json();
+    payload = (await response.json()) as TrpcResponse;
   } catch (error) {
     if (!(error instanceof SyntaxError)) throw error;
   }
@@ -41,5 +62,5 @@ export async function callTrpc(procedure, { type = "query", input = null, cache 
     throw new Error(`Resposta inválida do endpoint ${procedure}.`);
   }
 
-  return payload.result.data;
+  return payload.result.data as T;
 }

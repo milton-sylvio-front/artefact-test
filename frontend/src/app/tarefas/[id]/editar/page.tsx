@@ -2,7 +2,11 @@ import Link from "next/link";
 import TaskForm from "../../../../components/task-form";
 import { fetchTasksFromBackend } from "../../../../lib/tasks";
 
-export default async function EditTaskPage({ params }) {
+export default async function EditTaskPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
   const { id } = await params;
   let task;
 

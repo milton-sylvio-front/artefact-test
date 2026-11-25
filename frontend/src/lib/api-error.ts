@@ -1,4 +1,7 @@
-export async function getApiErrorMessage(response, fallback) {
+export async function getApiErrorMessage(
+  response: Pick<Response, "status" | "json">,
+  fallback: string,
+): Promise<string> {
   try {
     const body = await response.json();
     if (typeof body.erro === "string") {

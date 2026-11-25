@@ -3,15 +3,20 @@
 import Link from "next/link";
 import React, { useState } from "react";
 import { callTrpc } from "../lib/trpc";
+import type { Task } from "../lib/tasks";
 
-export default function TaskForm({ task = null }) {
+type TaskFormProps = {
+  task?: Task | null;
+};
+
+export default function TaskForm({ task = null }: TaskFormProps) {
   const [titulo, setTitulo] = useState(task?.titulo ?? "");
   const [descricao, setDescricao] = useState(task?.descricao ?? "");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  async function handleSubmit(event) {
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError("");
     setSuccess("");
@@ -24,7 +29,10 @@ export default function TaskForm({ task = null }) {
     setIsSubmitting(true);
 
     try {
-      const input = { titulo: titulo.trim(), descricao: descricao.trim() };
+      const input: { titulo: string; descricao: string; id?: string } = {
+        titulo: titulo.trim(),
+        descricao: descricao.trim(),
+      };
       if (task) input.id = task.id;
       await callTrpc(task ? "tasks.update" : "tasks.create", {
         type: "mutation",

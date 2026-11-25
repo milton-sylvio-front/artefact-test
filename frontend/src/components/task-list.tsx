@@ -3,14 +3,20 @@
 import Link from "next/link";
 import React, { useEffect, useRef, useState } from "react";
 import { callTrpc } from "../lib/trpc";
+import type { Task } from "../lib/tasks";
 
 const PAGE_SIZE = 10;
 
-export default function TaskList({ initialTasks, initialError = "" }) {
-  const [tasks, setTasks] = useState(initialTasks);
+type TaskListProps = {
+  initialTasks: Task[];
+  initialError?: string;
+};
+
+export default function TaskList({ initialTasks, initialError = "" }: TaskListProps) {
+  const [tasks, setTasks] = useState<Task[]>(initialTasks);
   const [error, setError] = useState(initialError);
   const [notice, setNotice] = useState("");
-  const [deletingId, setDeletingId] = useState(null);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
   const sentinelRef = useRef(null);
 
@@ -33,7 +39,7 @@ export default function TaskList({ initialTasks, initialError = "" }) {
     return () => observer.disconnect();
   }, [tasks.length, visibleCount]);
 
-  async function deleteTask(task) {
+  async function deleteTask(task: Task) {
     setError("");
     setNotice("");
     setDeletingId(task.id);

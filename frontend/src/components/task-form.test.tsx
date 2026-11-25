@@ -5,7 +5,13 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import TaskForm from "./task-form";
 
 vi.mock("next/link", () => ({
-  default: ({ children, href, ...props }) => (
+  default: ({
+    children,
+    href,
+    ...props
+  }: React.AnchorHTMLAttributes<HTMLAnchorElement> & {
+    href: string;
+  }) => (
     <a href={href} {...props}>
       {children}
     </a>
@@ -29,10 +35,10 @@ describe("TaskForm", () => {
 
   it("creates a task and shows success feedback", async () => {
     const user = userEvent.setup();
-    fetch.mockResolvedValue({
+    vi.mocked(fetch).mockResolvedValue({
       ok: true,
       json: async () => ({ result: { data: { id: "task-1" } } }),
-    });
+    } as unknown as Response);
     render(<TaskForm />);
 
     await user.type(screen.getByLabelText("Título"), "Planejar semana");
@@ -51,12 +57,21 @@ describe("TaskForm", () => {
 
   it("shows errors returned by the backend when updating", async () => {
     const user = userEvent.setup();
-    fetch.mockResolvedValue({
+    vi.mocked(fetch).mockResolvedValue({
       ok: false,
       status: 404,
       json: async () => ({ error: { message: "Tarefa não encontrada." } }),
-    });
-    render(<TaskForm task={{ id: "inexistente", titulo: "Tarefa", descricao: "" }} />);
+    } as unknown as Response);
+    render(
+      <TaskForm
+        task={{
+          id: "inexistente",
+          titulo: "Tarefa",
+          descricao: "",
+          dataCriacao: "2026-01-01T00:00:00.000Z",
+        }}
+      />,
+    );
 
     await user.click(screen.getByRole("button", { name: "Salvar alterações" }));
 

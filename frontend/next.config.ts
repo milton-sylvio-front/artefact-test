@@ -1,7 +1,8 @@
 const backendUrl = process.env.BACKEND_URL || "http://localhost:3001";
 
-/** @type {import('next').NextConfig} */
-const nextConfig = {
+import type { NextConfig } from "next";
+
+const nextConfig: NextConfig = {
   async rewrites() {
     return [
       {
@@ -16,4 +17,4 @@ const nextConfig = {
   },
 };
 
-module.exports = nextConfig;
+export default nextConfig;

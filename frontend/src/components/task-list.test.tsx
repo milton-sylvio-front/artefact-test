@@ -3,16 +3,23 @@ import userEvent from "@testing-library/user-event";
 import React from "react";
 import { describe, expect, it, vi } from "vitest";
 import TaskList from "./task-list";
+import type { Task } from "../lib/tasks";
 
 vi.mock("next/link", () => ({
-  default: ({ children, href, ...props }) => (
+  default: ({
+    children,
+    href,
+    ...props
+  }: React.AnchorHTMLAttributes<HTMLAnchorElement> & {
+    href: string;
+  }) => (
     <a href={href} {...props}>
       {children}
     </a>
   ),
 }));
 
-const makeTasks = (count) =>
+const makeTasks = (count: number): Task[] =>
   Array.from({ length: count }, (_, index) => ({
     id: `task-${index + 1}`,
     titulo: `Tarefa ${index + 1}`,
